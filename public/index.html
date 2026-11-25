@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarbonLens — Real-Time Website Carbon & Energy Auditor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+  <main class="max-w-3xl mx-auto px-6 py-12">
+    <header class="text-center mb-10">
+      <span class="px-3 py-1 text-xs font-semibold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30">
+        Sustainable Web Design (SWD) Engine
+      </span>
+      <h1 class="text-4xl font-bold mt-3 text-white">CarbonLens Auditor</h1>
+      <p class="text-slate-400 mt-2">Measure website page weight, energy consumption, and CO2 emissions per visit.</p>
+    </header>
+
+    <form id="auditForm" class="flex gap-3 mb-4">
+      <input id="urlInput" type="text" placeholder="Enter website URL (e.g., wikipedia.org)"
+        class="flex-1 px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required />
+      <button type="submit"
+        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition">
+        Audit Site
+      </button>
+    </form>
+
+    <div class="flex flex-wrap gap-2 mb-8 text-xs text-slate-400 items-center">
+      <span>Quick test:</span>
+      <button type="button" onclick="quickTest('wikipedia.org')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">wikipedia.org</button>
+      <button type="button" onclick="quickTest('python.org')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">python.org</button>
+      <button type="button" onclick="quickTest('bbc.com')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">bbc.com</button>
+    </div>
+
+    <div id="status" class="hidden text-center text-emerald-400 mb-6">Analyzing webpage resources and green hosting...</div>
+
+    <section id="results" class="hidden space-y-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+          <p class="text-xs text-slate-400">Eco Grade</p>
+          <p id="gradeVal" class="text-3xl font-bold text-emerald-400 mt-1">-</p>
+        </div>
+        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+          <p class="text-xs text-slate-400">CO2 / Page View</p>
+          <p id="co2Val" class="text-2xl font-bold text-white mt-1">-</p>
+        </div>
+        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+          <p class="text-xs text-slate-400">Page Weight</p>
+          <p id="weightVal" class="text-2xl font-bold text-white mt-1">-</p>
+        </div>
+        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+          <p class="text-xs text-slate-400">Hosting Status</p>
+          <p id="hostVal" class="text-lg font-semibold text-emerald-300 mt-1">-</p>
+        </div>
+      </div>
+
+      <div class="p-6 bg-slate-900 rounded-xl border border-slate-800">
+        <h2 class="text-lg font-semibold text-white mb-3">Optimization Recommendations</h2>
+        <ul id="recList" class="list-disc list-inside space-y-2 text-slate-300 text-sm"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function quickTest(domain) {
+      document.getElementById('urlInput').value = domain;
+      document.getElementById('auditForm').dispatchEvent(new Event('submit'));
+    }
+
+    document.getElementById('auditForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = document.getElementById('urlInput').value.trim();
+      const status = document.getElementById('status');
+      const results = document.getElementById('results');
+      status.classList.remove('hidden');
+      results.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Audit failed');
+
+        document.getElementById('gradeVal').textContent = data.grade;
+        document.getElementById('co2Val').textContent = `${data.co2Grams} g`;
+        document.getElementById('weightVal').textContent = `${data.totalKB} KB`;
+        document.getElementById('hostVal').textContent = data.isGreenHost ? 'Green Host' : 'Standard Grid';
+
+        const recList = document.getElementById('recList');
+        recList.innerHTML = data.recommendations.map(r => `<li>${r}</li>`).join('');
+        results.classList.remove('hidden');
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        status.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
