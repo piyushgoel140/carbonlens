@@ -1,10 +1,10 @@
 # 🌿 CarbonLens — Real-Time Website Carbon & Energy Auditor (SWDM v4)
 
-[![Live Demo][https://carbonlens-ytk3.onrender.com](https://carbonlens-ytk3.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Render_Cloud-10B981?style=for-the-badge&logo=render&logoColor=white)](https://carbonlens-ytk3.onrender.com)
 [![Methodology](https://img.shields.io/badge/Model-SWDM_v4_(494_gCO2%2FkWh)-0284C7?style=for-the-badge)](https://sustainablewebdesign.org/calculating-digital-emissions/)
 [![Node.js](https://img.shields.io/badge/Runtime-Node.js_v20_LTS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 
-**Live Web Site:** 👉 **[https://carbonlens-ytk3.onrender.com/}**  
+**Live Web App:** 👉 **[https://carbonlens-ytk3.onrender.com](https://carbonlens-ytk3.onrender.com)**  
 *(Note: Hosted on Render's free tier—if the server has been idle, allow ~30 seconds on the first request for cold-start wake-up.)*
 
 **CarbonLens** is a full-stack web sustainability auditing platform that measures the real-time environmental footprint of any live website. By inspecting transferred page weights across HTML, JavaScript, CSS, and Images and verifying renewable hosting infrastructure via **The Green Web Foundation API**, CarbonLens translates raw network telemetry into actionable carbon metrics using the **Sustainable Web Design Model Version 4 (SWDM v4)**.
