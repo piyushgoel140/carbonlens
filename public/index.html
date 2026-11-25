@@ -3,77 +3,261 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CarbonLens — Real-Time Website Carbon & Energy Auditor</title>
+  <title>CarbonLens — SWDM v4 Website Carbon & Energy Auditor</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
-  <main class="max-w-3xl mx-auto px-6 py-12">
-    <header class="text-center mb-10">
-      <span class="px-3 py-1 text-xs font-semibold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30">
-        Sustainable Web Design (SWD) Engine
-      </span>
-      <h1 class="text-4xl font-bold mt-3 text-white">CarbonLens Auditor</h1>
-      <p class="text-slate-400 mt-2">Measure website page weight, energy consumption, and CO2 emissions per visit.</p>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-emerald-500/30">
+  <nav class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur sticky top-0 z-20">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-bold text-slate-950">C</div>
+        <span class="font-bold text-lg tracking-tight text-white">CarbonLens</span>
+        <span class="hidden sm:inline-block text-xs px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">SWDM v4 Engine</span>
+      </div>
+      <div class="flex gap-2 bg-slate-900 p-1 rounded-lg border border-slate-800">
+        <button id="tabSingle" type="button" onclick="switchMode('single')" class="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white transition">Single Audit</button>
+        <button id="tabCompare" type="button" onclick="switchMode('compare')" class="px-3.5 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition">Head-to-Head Compare</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-6 py-10">
+    <header class="text-center max-w-2xl mx-auto mb-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Audit Any Website’s <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Digital Carbon Footprint</span>
+      </h1>
+      <p class="text-slate-400 mt-2 text-sm sm:text-base">
+        Powered by Sustainable Web Design Model v4 (494 gCO₂/kWh global grid intensity) &amp; The Green Web Foundation API.
+      </p>
     </header>
 
-    <form id="auditForm" class="flex gap-3 mb-4">
-      <input id="urlInput" type="text" placeholder="Enter website URL (e.g., wikipedia.org)"
-        class="flex-1 px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required />
-      <button type="submit"
-        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition">
-        Audit Site
-      </button>
-    </form>
+    <div id="singlePanel">
+      <form id="auditForm" class="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-4">
+        <input id="urlInput" type="text" placeholder="Enter website URL (e.g., wikipedia.org)"
+          class="flex-1 px-4 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500" required />
+        <button type="submit"
+          class="px-7 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-950/50 transition">
+          Audit Website
+        </button>
+      </form>
 
-    <div class="flex flex-wrap gap-2 mb-8 text-xs text-slate-400 items-center">
-      <span>Quick test:</span>
-      <button type="button" onclick="quickTest('wikipedia.org')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">wikipedia.org</button>
-      <button type="button" onclick="quickTest('python.org')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">python.org</button>
-      <button type="button" onclick="quickTest('bbc.com')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-slate-200">bbc.com</button>
+      <div class="flex flex-wrap justify-center gap-2 mb-6 text-xs text-slate-400 items-center">
+        <span>Try presets:</span>
+        <button type="button" onclick="quickTest('wikipedia.org')" class="px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-emerald-300 cursor-pointer">wikipedia.org (Clean)</button>
+        <button type="button" onclick="quickTest('python.org')" class="px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-cyan-300 cursor-pointer">python.org (Moderate)</button>
+        <button type="button" onclick="quickTest('bbc.com')" class="px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-amber-300 cursor-pointer">bbc.com (Heavy)</button>
+      </div>
+      <div id="historyBar" class="hidden flex-wrap justify-center gap-2 mb-8 text-xs text-slate-400 items-center"></div>
     </div>
 
-    <div id="status" class="hidden text-center text-emerald-400 mb-6">Analyzing webpage resources and green hosting...</div>
+    <div id="comparePanel" class="hidden max-w-3xl mx-auto mb-8">
+      <form id="compareForm" class="grid grid-cols-1 sm:grid-cols-7 gap-3 items-center">
+        <input id="urlA" type="text" placeholder="First site (e.g., wikipedia.org)" value="wikipedia.org"
+          class="sm:col-span-3 px-4 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required />
+        <div class="text-center font-bold text-slate-500 text-sm">VS</div>
+        <input id="urlB" type="text" placeholder="Second site (e.g., bbc.com)" value="bbc.com"
+          class="sm:col-span-3 px-4 py-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required />
+        <button type="submit"
+          class="sm:col-span-7 py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold rounded-xl transition">
+          Compare Carbon Footprints
+        </button>
+      </form>
+    </div>
+
+    <div id="errorBox" class="hidden max-w-2xl mx-auto mb-6 p-4 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-sm text-center"></div>
+    <div id="status" class="hidden text-center text-emerald-400 mb-8 animate-pulse font-medium">
+      Scanning DOM assets, verifying green hosting &amp; running SWDM v4 model...
+    </div>
 
     <section id="results" class="hidden space-y-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-          <p class="text-xs text-slate-400">Eco Grade</p>
-          <p id="gradeVal" class="text-3xl font-bold text-emerald-400 mt-1">-</p>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+          <p class="text-xs uppercase tracking-wider text-slate-400">Digital Carbon Rating</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <p id="gradeVal" class="text-4xl font-extrabold text-emerald-400">-</p>
+            <span id="cleanerVal" class="text-xs text-emerald-300"></span>
+          </div>
         </div>
-        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-          <p class="text-xs text-slate-400">CO2 / Page View</p>
-          <p id="co2Val" class="text-2xl font-bold text-white mt-1">-</p>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+          <p class="text-xs uppercase tracking-wider text-slate-400">CO₂ / Page View</p>
+          <p id="co2Val" class="text-3xl font-bold text-white mt-1">-</p>
+          <p id="energyVal" class="text-xs text-slate-400 mt-1">-</p>
         </div>
-        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-          <p class="text-xs text-slate-400">Page Weight</p>
-          <p id="weightVal" class="text-2xl font-bold text-white mt-1">-</p>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+          <p class="text-xs uppercase tracking-wider text-slate-400">Transferred Weight</p>
+          <p id="weightVal" class="text-3xl font-bold text-white mt-1">-</p>
+          <p id="assetVal" class="text-xs text-slate-400 mt-1">-</p>
         </div>
-        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-          <p class="text-xs text-slate-400">Hosting Status</p>
-          <p id="hostVal" class="text-lg font-semibold text-emerald-300 mt-1">-</p>
+        <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+          <p class="text-xs uppercase tracking-wider text-slate-400">Server Infrastructure</p>
+          <p id="hostVal" class="text-xl font-bold text-emerald-300 mt-2">-</p>
+          <p id="hostSub" class="text-xs text-slate-400 mt-1">-</p>
         </div>
       </div>
 
-      <div class="p-6 bg-slate-900 rounded-xl border border-slate-800">
-        <h2 class="text-lg font-semibold text-white mb-3">Optimization Recommendations</h2>
-        <ul id="recList" class="list-disc list-inside space-y-2 text-slate-300 text-sm"></ul>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800">
+          <h2 class="text-base font-semibold text-white mb-1">Payload Breakdown by Resource Type</h2>
+          <p class="text-xs text-slate-400 mb-4">Total transferred kilobytes across HTML, JS, CSS &amp; Images</p>
+          <div class="h-56 flex items-center justify-center">
+            <canvas id="assetChart"></canvas>
+          </div>
+        </div>
+
+        <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h2 class="text-base font-semibold text-white mb-1">SWDM v4 System Boundary Split</h2>
+            <p class="text-xs text-slate-400 mb-4">Operational + Embodied emissions across internet segments</p>
+            <div class="space-y-4 text-sm">
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slate-300">End-User Devices (54%)</span><span id="segDev" class="font-mono text-emerald-400">-</span></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full"><div class="bg-emerald-500 h-2 rounded-full" style="width:54%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slate-300">Transmission Networks (24%)</span><span id="segNet" class="font-mono text-cyan-400">-</span></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full"><div class="bg-cyan-500 h-2 rounded-full" style="width:24%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slate-300">Data Centers (22%)</span><span id="segDC" class="font-mono text-amber-400">-</span></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full"><div class="bg-amber-500 h-2 rounded-full" style="width:22%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+            <span>Operational: <strong id="opVal" class="text-slate-200">-</strong></span>
+            <span>Embodied Hardware: <strong id="emVal" class="text-slate-200">-</strong></span>
+          </div>
+        </div>
       </div>
+
+      <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base font-semibold text-white">Annual Impact Simulator</h2>
+            <p class="text-xs text-slate-400">Drag slider to simulate monthly page views for <span id="simHost" class="text-emerald-400 font-medium">this site</span></p>
+          </div>
+          <div class="text-right">
+            <span id="viewsLabel" class="text-lg font-bold text-emerald-400">10,000</span>
+            <span class="text-xs text-slate-400"> views / month</span>
+          </div>
+        </div>
+        <input id="viewsSlider" type="range" min="1000" max="500000" step="1000" value="10000"
+          class="w-full accent-emerald-500 cursor-pointer mb-5" oninput="updateSimulator()" />
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-xs text-slate-400">Annual CO₂</p>
+            <p id="simCo2" class="text-lg font-bold text-white mt-0.5">-</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-xs text-slate-400">Annual Energy</p>
+            <p id="simKwh" class="text-lg font-bold text-cyan-300 mt-0.5">-</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-xs text-slate-400">Car Driving Equiv.</p>
+            <p id="simCar" class="text-lg font-bold text-amber-300 mt-0.5">-</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-xs text-slate-400">Trees to Offset</p>
+            <p id="simTrees" class="text-lg font-bold text-emerald-400 mt-0.5">-</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 p-6 bg-slate-900 rounded-2xl border border-slate-800">
+          <h2 class="text-base font-semibold text-white mb-3">Actionable Engineering Recommendations</h2>
+          <div id="recList" class="space-y-3"></div>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h2 class="text-base font-semibold text-white mb-1">CarbonLens Eco-Badge</h2>
+            <p class="text-xs text-slate-400 mb-3">Embeddable sustainability snippet for audited sites</p>
+            <div id="badgePreview" class="p-3 rounded-lg bg-slate-950 border border-emerald-500/40 text-center text-xs font-mono text-emerald-300 mb-3"></div>
+          </div>
+          <button type="button" onclick="copyBadge()" class="w-full py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition">
+            Copy HTML Badge Snippet
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="compareResults" class="hidden space-y-6">
+      <div id="winnerBanner" class="p-4 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-center text-emerald-200 font-semibold"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="compareCards"></div>
     </section>
   </main>
 
   <script>
-    function quickTest(domain) {
-      document.getElementById('urlInput').value = domain;
-      document.getElementById('auditForm').dispatchEvent(new Event('submit'));
+    let currentCo2 = 0;
+    let currentKwh = 0;
+    let assetChartInstance = null;
+
+    function switchMode(mode) {
+      document.getElementById('errorBox').classList.add('hidden');
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('compareResults').classList.add('hidden');
+      if (mode === 'single') {
+        document.getElementById('singlePanel').classList.remove('hidden');
+        document.getElementById('comparePanel').classList.add('hidden');
+        document.getElementById('tabSingle').className = 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white transition';
+        document.getElementById('tabCompare').className = 'px-3.5 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition';
+      } else {
+        document.getElementById('singlePanel').classList.add('hidden');
+        document.getElementById('comparePanel').classList.remove('hidden');
+        document.getElementById('tabCompare').className = 'px-3.5 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white transition';
+        document.getElementById('tabSingle').className = 'px-3.5 py-1.5 text-xs font-semibold rounded-md text-slate-400 hover:text-white transition';
+      }
     }
 
-    document.getElementById('auditForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const url = document.getElementById('urlInput').value.trim();
+    function quickTest(domain) {
+      document.getElementById('urlInput').value = domain;
+      runSingleAudit(domain);
+    }
+
+    function saveHistory(hostname) {
+      let hist = JSON.parse(localStorage.getItem('cl_history') || '[]');
+      hist = [hostname, ...hist.filter(h => h !== hostname)].slice(0, 5);
+      localStorage.setItem('cl_history', JSON.stringify(hist));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const hist = JSON.parse(localStorage.getItem('cl_history') || '[]');
+      const bar = document.getElementById('historyBar');
+      if (!hist.length) return;
+      bar.classList.remove('hidden');
+      bar.classList.add('flex');
+      bar.innerHTML = '<span>Recent:</span>' + hist.map(h =>
+        `<button type="button" onclick="quickTest('${h}')" class="px-2.5 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-slate-300 cursor-pointer">${h}</button>`
+      ).join('');
+    }
+    renderHistory();
+
+    function updateSimulator() {
+      const views = parseInt(document.getElementById('viewsSlider').value, 10);
+      document.getElementById('viewsLabel').textContent = views.toLocaleString();
+      const annualKg = (currentCo2 * views * 12) / 1000;
+      const annualKwh = currentKwh * views * 12;
+      document.getElementById('simCo2').textContent = `${annualKg.toFixed(2)} kg`;
+      document.getElementById('simKwh').textContent = `${annualKwh.toFixed(1)} kWh`;
+      document.getElementById('simCar').textContent = `${(annualKg * 4.1).toFixed(0)} km`;
+      document.getElementById('simTrees').textContent = `${Math.max(1, Math.ceil(annualKg / 21))} trees`;
+    }
+
+    function copyBadge() {
+      const text = document.getElementById('badgePreview').textContent;
+      navigator.clipboard.writeText(text);
+      alert('Eco-Badge snippet copied to clipboard!');
+    }
+
+    async function runSingleAudit(url) {
       const status = document.getElementById('status');
       const results = document.getElementById('results');
+      const errorBox = document.getElementById('errorBox');
       status.classList.remove('hidden');
       results.classList.add('hidden');
+      errorBox.classList.add('hidden');
 
       try {
         const res = await fetch('/api/audit', {
@@ -84,16 +268,126 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Audit failed');
 
-        document.getElementById('gradeVal').textContent = data.grade;
-        document.getElementById('co2Val').textContent = `${data.co2Grams} g`;
-        document.getElementById('weightVal').textContent = `${data.totalKB} KB`;
-        document.getElementById('hostVal').textContent = data.isGreenHost ? 'Green Host' : 'Standard Grid';
+        saveHistory(data.hostname);
+        currentCo2 = data.co2Grams;
+        currentKwh = data.energyKWh;
 
-        const recList = document.getElementById('recList');
-        recList.innerHTML = data.recommendations.map(r => `<li>${r}</li>`).join('');
+        const gradeEl = document.getElementById('gradeVal');
+        gradeEl.textContent = data.grade;
+        gradeEl.className = 'text-4xl font-extrabold ' + (['A+','A','B'].includes(data.grade) ? 'text-emerald-400' : ['C','D'].includes(data.grade) ? 'text-amber-400' : 'text-red-400');
+        document.getElementById('cleanerVal').textContent = `Cleaner than ${data.cleanerThan}%`;
+
+        document.getElementById('co2Val').textContent = `${data.co2Grams} g`;
+        document.getElementById('energyVal').textContent = `${data.energyKWh} kWh / view`;
+        document.getElementById('weightVal').textContent = `${data.totalKB} KB`;
+        document.getElementById('assetVal').textContent = `${data.assetCount} linked assets scanned`;
+
+        document.getElementById('hostVal').textContent = data.isGreenHost ? 'Green Host' : 'Standard Grid';
+        document.getElementById('hostVal').className = 'text-xl font-bold mt-2 ' + (data.isGreenHost ? 'text-emerald-300' : 'text-amber-300');
+        document.getElementById('hostSub').textContent = data.isGreenHost ? 'Verified Renewable Energy' : '494 gCO₂/kWh Grid Average';
+
+        document.getElementById('segDev').textContent = `${data.segments.userDevices} g`;
+        document.getElementById('segNet').textContent = `${data.segments.networks} g`;
+        document.getElementById('segDC').textContent = `${data.segments.dataCenters} g`;
+        document.getElementById('opVal').textContent = `${data.segments.operational} g`;
+        document.getElementById('emVal').textContent = `${data.segments.embodied} g`;
+
+        document.getElementById('simHost').textContent = data.hostname;
+        updateSimulator();
+
+        document.getElementById('recList').innerHTML = data.recommendations.map(r => `
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-[10px] font-bold rounded ${r.priority === 'High' ? 'bg-red-500/20 text-red-300' : r.priority === 'Medium' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">${r.priority}</span>
+              <h3 class="text-sm font-semibold text-white">${r.title}</h3>
+            </div>
+            <p class="text-xs text-slate-400">${r.detail}</p>
+          </div>
+        `).join('');
+
+        document.getElementById('badgePreview').textContent = `🌿 ${data.co2Grams}g CO₂/view • Grade ${data.grade} — Verified by CarbonLens`;
+
+        const ctx = document.getElementById('assetChart').getContext('2d');
+        if (assetChartInstance) assetChartInstance.destroy();
+        assetChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['HTML', 'JavaScript', 'CSS', 'Images'],
+            datasets: [{
+              data: [data.breakdownKB.html, data.breakdownKB.scripts, data.breakdownKB.styles, data.breakdownKB.images],
+              backgroundColor: ['#10B981', '#06B6D4', '#8B5CF6', '#F59E0B'],
+              borderColor: '#0F172A',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'right', labels: { color: '#CBD5E1', font: { size: 11 } } } }
+          }
+        });
+
         results.classList.remove('hidden');
       } catch (err) {
-        alert(err.message);
+        errorBox.textContent = err.message;
+        errorBox.classList.remove('hidden');
+      } finally {
+        status.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('auditForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runSingleAudit(document.getElementById('urlInput').value.trim());
+    });
+
+    document.getElementById('compareForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const urlA = document.getElementById('urlA').value.trim();
+      const urlB = document.getElementById('urlB').value.trim();
+      const status = document.getElementById('status');
+      const compareResults = document.getElementById('compareResults');
+      const errorBox = document.getElementById('errorBox');
+      status.classList.remove('hidden');
+      compareResults.classList.add('hidden');
+      errorBox.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/compare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urlA, urlB })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Comparison failed');
+
+        const { siteA, siteB } = data;
+        const cleaner = siteA.co2Grams <= siteB.co2Grams ? siteA : siteB;
+        const heavier = cleaner === siteA ? siteB : siteA;
+        const pct = heavier.co2Grams > 0 ? Math.round(((heavier.co2Grams - cleaner.co2Grams) / heavier.co2Grams) * 100) : 0;
+
+        document.getElementById('winnerBanner').textContent =
+          `🏆 ${cleaner.hostname} emits ${pct}% less CO₂ per visit (${cleaner.co2Grams} g vs ${heavier.co2Grams} g)`;
+
+        document.getElementById('compareCards').innerHTML = [siteA, siteB].map(s => `
+          <div class="p-6 bg-slate-900 rounded-2xl border ${s === cleaner ? 'border-emerald-500/60' : 'border-slate-800'}">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-bold text-white">${s.hostname}</h3>
+              <span class="px-3 py-1 rounded-full text-sm font-extrabold ${['A+','A','B'].includes(s.grade) ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">Grade ${s.grade}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="p-3 bg-slate-950 rounded-xl"><span class="text-slate-400 text-xs block">CO₂ / View</span><strong class="text-white text-base">${s.co2Grams} g</strong></div>
+              <div class="p-3 bg-slate-950 rounded-xl"><span class="text-slate-400 text-xs block">Page Weight</span><strong class="text-white text-base">${s.totalKB} KB</strong></div>
+              <div class="p-3 bg-slate-950 rounded-xl"><span class="text-slate-400 text-xs block">Hosting</span><strong class="${s.isGreenHost ? 'text-emerald-400' : 'text-amber-400'}">${s.isGreenHost ? 'Green Host' : 'Standard Grid'}</strong></div>
+              <div class="p-3 bg-slate-950 rounded-xl"><span class="text-slate-400 text-xs block">Assets</span><strong class="text-slate-200">${s.assetCount} files</strong></div>
+            </div>
+          </div>
+        `).join('');
+
+        compareResults.classList.remove('hidden');
+      } catch (err) {
+        errorBox.textContent = err.message;
+        errorBox.classList.remove('hidden');
       } finally {
         status.classList.add('hidden');
       }
