@@ -112,7 +112,7 @@ carbonlens/
 ## 🚀 Running Locally
 
 ```bash
-git clone [https://github.com/](https://github.com/)piyushgoel140/carbonlens.git
+git clone https://github.com/piyushgoel140/carbonlens.git
 cd carbonlens
 npm install
 npm start
