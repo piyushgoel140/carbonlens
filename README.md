@@ -36,7 +36,7 @@
 ## Local Setup & Installation
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/](https://github.com/)<your-username>/carbonlens.git
+git clone [https://github.com/](https://github.com/)piyushgoel40/carbonlens.git
 cd carbonlens
 
 # 2. Install dependencies
