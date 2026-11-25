@@ -111,8 +111,24 @@ carbonlens/
 
 ## 🚀 Running Locally
 
+> **Just want to test the app?** No installation is needed—open the live web app directly in any browser: **[https://carbonlens-ytk3.onrender.com](https://carbonlens-ytk3.onrender.com)**
+
+To run a local copy on your own computer (requires **[Node.js v18+](https://nodejs.org/)**):
+
+### Option A: Download ZIP (No Git Required)
+1. Click the green **`<> Code`** button at the top of this repository and select **Download ZIP**.
+2. Extract the downloaded ZIP folder (`carbonlens-main`) to your Desktop.
+3. Open the extracted folder, click the folder's address bar at the top, type `cmd`, and press **Enter** to open Command Prompt inside that folder.
+4. Install dependencies and start the server:
+   ```bash
+   npm install
+   npm start
+   ```
+5. Open **`http://localhost:3000`** in your browser.
+
+### Option B: Clone via Git
 ```bash
-git clone https://github.com/piyushgoel140/carbonlens.git
+git clone [https://github.com/piyushgoel140/carbonlens.git](https://github.com/piyushgoel140/carbonlens.git)
 cd carbonlens
 npm install
 npm start
