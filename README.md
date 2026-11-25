@@ -1,6 +1,6 @@
 # 🌿 CarbonLens — Real-Time Website Carbon & Energy Auditor (SWDM v4)
 
-[![Live Demo](https://carbonlens-ytk3.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Render_Cloud-10B981?style=for-the-badge&logo=render&logoColor=white)](https://carbonlens.onrender.com)
 [![Methodology](https://img.shields.io/badge/Model-SWDM_v4_(494_gCO2%2FkWh)-0284C7?style=for-the-badge)](https://sustainablewebdesign.org/calculating-digital-emissions/)
 [![Node.js](https://img.shields.io/badge/Runtime-Node.js_v20_LTS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 
